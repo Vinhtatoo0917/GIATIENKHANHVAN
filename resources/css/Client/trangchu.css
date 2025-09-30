@@ -1,0 +1,113 @@
+:root {
+            --pink: #D9A1AC;
+            /* tone chính */
+            --pink-2: #F6E6EA;
+            /* nền nhạt */
+            --ink: #53363C;
+            /* text đậm hơn chút */
+            --muted: #7A4E56;
+            /* text phụ */
+            --border: #EED6DC;
+            /* viền */
+            --gold: #B58A5A;
+            /* nhấn sang trọng */
+            --gold-2: #E9D9C2;
+            /* nhũ nhẹ */
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+            color: var(--ink)
+        }
+
+        .serif {
+            font-family: "Playfair Display", Georgia, serif
+        }
+
+        .soft-card {
+            background: rgba(255, 255, 255, .72);
+            backdrop-filter: blur(10px)
+        }
+
+        .gold-text {
+            background: linear-gradient(90deg, #C7A47C, #E8D3B5, #C7A47C);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent
+        }
+
+        .gold-ring {
+            position: relative
+        }
+
+        .gold-ring:before {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(135deg, #EAD6C1, rgba(217, 161, 172, .7));
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold-2), transparent)
+        }
+
+        .lift {
+            transition: transform .35s ease, box-shadow .35s ease
+        }
+
+        .lift:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(121, 76, 86, .15)
+        }
+
+        /* subtle scroll-in */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px)
+            }
+
+            to {
+                opacity: 1;
+                transform: none
+            }
+        }
+
+        [data-anim] {
+            opacity: 0;
+            animation: fadeUp .7s ease forwards;
+            animation-delay: var(--d, 0s)
+        }
+
+        .hero-blob {
+            filter: blur(60px);
+            opacity: .6
+        }
+
+        .tile {
+            background: radial-gradient(60% 60% at 50% 45%, #fff 0%, #F6E6EA 45%, #E8C3CC 100%)
+        }
+
+        .ribbon {
+            position: absolute;
+            top: 14px;
+            left: -10px;
+            background: var(--pink);
+            color: #3d2a2e;
+            font-weight: 600;
+            font-size: .75rem;
+            padding: .35rem .75rem;
+            border-top-right-radius: .5rem;
+            border-bottom-right-radius: .5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .08)
+        }

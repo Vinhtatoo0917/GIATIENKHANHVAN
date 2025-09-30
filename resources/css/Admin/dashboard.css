@@ -1,0 +1,66 @@
+:root {
+            --pink: #D9A1AC;
+            --pink-2: #F6E6EA;
+            --ink: #53363C;
+            --muted: #7A4E56;
+            --border: #EED6DC
+        }
+
+        body {
+            font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial;
+            color: var(--ink)
+        }
+
+        .soft-card {
+            background: rgba(255, 255, 255, .72);
+            backdrop-filter: blur(10px)
+        }
+
+        .gold-ring {
+            position: relative
+        }
+
+        .gold-ring:before {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(135deg, #EAD6C1, rgba(217, 161, 172, .7));
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #E9D9C2, transparent)
+        }
+
+        .lift {
+            transition: transform .3s, box-shadow .3s
+        }
+
+        .lift:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 24px rgba(121, 76, 86, .12)
+        }
+
+        th,
+        td {
+            white-space: nowrap
+        }
+
+        .preview-box {
+            aspect-ratio: 4/3;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            background: #fafafa
+        }
+
+        .preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover
+        }
