@@ -18,10 +18,10 @@
             <select id="filterPrice"
                 class="px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[var(--pink)] focus:outline-none">
                 <option value="">-- Tất cả --</option>
-                <option value="3">≤ 3 triệu</option>
-                <option value="5">≤ 5 triệu</option>
-                <option value="10">≤ 10 triệu</option>
-                <option value="11">> 10 triệu</option>
+                <option value="3000000">≤ 3 triệu</option>
+                <option value="5000000">≤ 5 triệu</option>
+                <option value="10000000">≤ 10 triệu</option>
+                <option value="11000000">> 10 triệu</option>
             </select>
         </div>
 
@@ -51,7 +51,7 @@
 
 
     <!-- Grid danh sách sản phẩm -->
-    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div id="sanphamGrid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         @foreach($listsanpham as $item)
         <div class="soft-card border rounded-2xl overflow-hidden shadow hover:shadow-lg transition bg-white"
             style="border-color:var(--border)">
@@ -732,6 +732,95 @@
             thumbnailPreviewEdit.classList.remove("hidden");
         } else {
             thumbnailPreviewEdit.classList.add("hidden");
+        }
+    });
+
+    const btnFilter = document.getElementById('btnFilter');
+    const filterPrice = document.getElementById('filterPrice');
+    const filterColor = document.getElementById('filterColor');
+    const sanphamGrid = document.getElementById('sanphamGrid');
+
+    btnFilter.addEventListener('click', async () => {
+        const mucgia = filterPrice.value;
+        const mau = filterColor.value;
+
+        try {
+            Swal.fire({
+                title: 'Đang lọc sản phẩm...',
+                html: 'Vui lòng chờ trong giây lát',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading(),
+                color: '#53363C',
+                background: '#FFF'
+            });
+
+            const res = await fetch("{{ route('timkiemsanpham') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrf
+                },
+                body: JSON.stringify({
+                    mucgia: mucgia,
+                    mau: mau
+                })
+            });
+
+            const data = await res.json();
+            Swal.close();
+
+            if (data.success) {
+                const ds = data.data;
+                sanphamGrid.innerHTML = '';
+
+                if (ds.length === 0) {
+                    sanphamGrid.innerHTML = `
+                    <div class="col-span-full text-center text-gray-500 py-8">
+                        😢 Không tìm thấy sản phẩm phù hợp.
+                    </div>`;
+                    return;
+                }
+                ds.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = "soft-card border rounded-2xl overflow-hidden shadow hover:shadow-lg transition bg-white";
+                    div.style.borderColor = "var(--border)";
+                    div.innerHTML = `
+                    <div class="aspect-[4/3] bg-gray-100">
+                        <img src="${item.LINKANHDAIDIEN ?? '/img/no-image.jpg'}"
+                             alt="${item.TENGIATIEN}"
+                             class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold">${item.TENGIATIEN}</h3>
+                        <p class="text-sm text-gray-600 mt-1 line-clamp-2">
+                            ${item.MOTA ?? ''}
+                        </p>
+                        <p class="mt-3 text-lg font-bold text-[var(--pink)]">
+                            ${(item.GIATIEN / 1000000).toFixed(1)} triệu
+                            <span class="text-sm font-normal">/ gói</span>
+                        </p>
+                        <div class="flex gap-2 mt-4">
+                            <button data-id="${item.IDGIATIEN}" onclick="openEditModal(this)"
+                                class="flex-1 px-3 py-2 rounded-lg border text-sm hover:bg-gray-50"
+                                style="border-color:var(--border)">
+                                ✏️ Sửa
+                            </button>
+                            <button data-id="${item.IDGIATIEN}" onclick="xoagiatien(this)"
+                                class="flex-1 px-3 py-2 rounded-lg border text-sm hover:bg-red-50 text-red-600"
+                                style="border-color:var(--border)">
+                                🗑️ Xoá
+                            </button>
+                        </div>
+                    </div>
+                `;
+                    sanphamGrid.appendChild(div);
+                });
+            } else {
+                Swal.fire('Lỗi', data.message || 'Không thể tải danh sách.', 'error');
+            }
+        } catch (err) {
+            Swal.close();
+            Swal.fire('Lỗi', 'Không thể kết nối đến server.', 'error');
         }
     });
 </script>

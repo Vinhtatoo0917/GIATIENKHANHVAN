@@ -19,6 +19,10 @@ use App\Http\Controllers\Admincontroller;
 
 Route::get('/', [TrangchuController::class, 'Index'])->name('trangchu');
 Route::get('/Admin/testconsole', [Admincontroller::class, 'testconsole'])->name('testconsole');
+Route::get('/Giatien/sanpham', [Trangchucontroller::class, 'sanpham'])->name('sanpham');
+Route::post('/Giatien/timkiemsanpham', [Admincontroller::class, 'timkiemsanpham'])->name('timkiemsanpham');
+Route::get('/Giatien/chitietsanpham/{id}', [Trangchucontroller::class, 'chitietsanpham'])->name('chitietsanpham');
+Route::get('/Giatien/sanphamtheomau/{idmau}', [Trangchucontroller::class, 'sanphamtheomau'])->name('sanphamtheomau');
 
 Route::middleware(['checkAdminCookie', 'redirectIfAdmin'])->group(function () {
     Route::get('/Admin/dangnhap', [Admincontroller::class, 'dangnhap'])->name('dangnhapadmin');
@@ -44,4 +48,6 @@ Route::middleware(['checkAdminCookie', 'checkAdminSession'])->group(function () 
     Route::post('/Admin/xoaanhchitiet', [Admincontroller::class, 'xoaanhchitiet'])->name('xoaanhchitiet');
     Route::post('/Admin/updategiatien', [Admincontroller::class, 'updategiatien'])->name('updategiatien');
     Route::post('/Admin/deletegiatien', [Admincontroller::class, 'deletegiatien'])->name('deletegiatien');
+    Route::get('/Admin/quanlylienhe', [Admincontroller::class, 'quanlylienhe'])->name('quanlylienhe');
+    Route::post('/Admin/capnhapthongtinlienhe', [Admincontroller::class, 'capnhapthongtinlienhe'])->name('capnhapthongtinlienhe');
 });

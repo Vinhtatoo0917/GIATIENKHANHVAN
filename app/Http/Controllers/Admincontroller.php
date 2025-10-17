@@ -84,7 +84,6 @@ class Admincontroller extends Controller
     }
 
     public function dangxuat(Request $request) {
-
         $request->session()->flush();
         Cookie::queue(Cookie::forget('remember_admin'));
         return response()->json([
@@ -581,4 +580,75 @@ class Admincontroller extends Controller
             ]);
         }
     }
+
+    public function timkiemsanpham(Request $request) {
+        try {
+            $mucgia = $request->input('mucgia');
+            $mau = $request->input('mau');
+
+            $query = DB::table('giatien');
+            if (!empty($mucgia)) {
+                switch ($mucgia) {
+                    case 3000000:
+                        $query->where('GIATIEN', '<=', 3000000);
+                        break;
+                    case 5000000:
+                        $query->where('GIATIEN', '<=', 5000000);
+                        break;
+                    case 10000000:
+                        $query->where('GIATIEN', '<=', 10000000);
+                        break;
+                    case 11000000:
+                        $query->where('GIATIEN', '>', 10000000);
+                        break;
+                }
+            }
+
+            if (!empty($mau) && $mau !== 'all') {
+                $query->join('gia_tien_mau_sac', 'giatien.IDGIATIEN', '=', 'gia_tien_mau_sac.IDGIATIEN')
+                    ->where('gia_tien_mau_sac.id_mau', '=', $mau)
+                    ->select('giatien.*');
+            }
+
+            $ketqua = $query->get();
+            return response()->json([
+                'success' => true,
+                'data' => $ketqua
+            ]);
+        }
+        catch(Exception $e) {
+            return response()->json([
+                'success'=>false,
+                'message'=>'Lỗi bên phía sever !!!'
+            ]);
+        }
+    }
+
+    public function quanlylienhe() {
+        $adminid = session('admin_id');
+        $admin = DB::selectOne('SELECT NAME FROM admin WHERE ID = ?', [$adminid]);
+        $nameadmin = $admin->NAME;
+        $thongtinlienhe = DB::selectOne('SELECT * FROM thongtinlienhetrangchu LIMIT 1');
+        return view('Admin.lienhe', compact('nameadmin', 'thongtinlienhe'));
+    }
+
+    public function capnhapthongtinlienhe(Request $request) {
+        try {
+            $sdt = $request->input('sdt');
+            $linkfacebook = $request->input('linkfacebook');
+            $id = $request->input('id');
+            DB::update('UPDATE thongtinlienhetrangchu SET SDT = ?, LINKFACEBOOK = ? WHERE ID = ?', [$sdt, $linkfacebook, $id]);
+            return Response([
+                'success' => true,
+                'message' => "Cập nhập thành công"
+            ]);
+        }
+        catch(Exception $e) {
+            return Response([
+                'success' => false,
+                'message' => "Cập nhập không thành công, Lỗi " . $e->getMessage()
+            ]);
+        }
+    }
+
 }

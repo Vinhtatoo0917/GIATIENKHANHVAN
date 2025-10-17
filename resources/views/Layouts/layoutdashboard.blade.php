@@ -24,8 +24,11 @@
         <!-- Sidebar -->
         <aside class="border-r md:sticky md:top-0 md:h-screen p-6 border bg-white/80 backdrop-blur">
             <div class="flex items-center gap-3 px-1">
-                <div class="w-11 h-11 rounded-2xl grid place-items-center text-xl font-bold shadow-inner"
-                    style="background:var(--pink)">💒</div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                    stroke="#5D3A41" stroke-width="2">
+                    <path
+                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z" />
+                </svg>
                 <div>
                     <div class="serif text-lg leading-5 font-semibold">Gia Tiên Khánh Vân</div>
                     <div class="text-[11px] tracking-[.18em] uppercase" style="color:var(--muted)">
@@ -48,8 +51,11 @@
                 <button onclick="window.location.href='{{ route('quanlymausac') }}'" class="menu-btn w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-[var(--pink-2)]">
                     🎨 <span>Màu sắc</span>
                 </button>
-                <button onclick="showSection(event, 'contacts')" class="menu-btn w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-[var(--pink-2)]">
+                <button onclick="window.location.href='{{ route('quanlylienhe') }}'" class="menu-btn w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-[var(--pink-2)]">
                     📇 <span>Liên hệ</span>
+                </button>
+                <button onclick="dangxuat()" class="menu-btn w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-[var(--pink-2)]">
+                    🚪 <span>Đăng xuất</span>
                 </button>
             </nav>
         </aside>
@@ -71,7 +77,6 @@
             e.currentTarget.classList.add("bg-[var(--pink-2)]", "font-semibold");
         }
 
-        // ===== Modal helpers =====
         document.querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => document.getElementById(b.dataset.open).showModal()));
         document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => b.closest('dialog').close()));
 
@@ -82,7 +87,6 @@
             setTimeout(() => t.classList.add('hidden'), 1200);
         }
 
-        // ===== Preview nhiều ảnh (add) =====
         const giatienFiles = document.getElementById('giatienFiles');
         const giatienPreviewWrap = document.getElementById('giatienPreviewWrap');
         giatienFiles?.addEventListener('change', () => {
@@ -121,6 +125,79 @@
             img.src = URL.createObjectURL(f);
             editImagePreview.classList.remove('hidden');
         });
+
+        async function dangxuat() {
+            try {
+                const result = await Swal.fire({
+                    title: 'Bạn có chắc muốn đăng xuất?',
+                    text: "Phiên làm việc hiện tại sẽ kết thúc!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Có, đăng xuất',
+                    cancelButtonText: 'Hủy',
+                    confirmButtonColor: '#D9A1AC',
+                    cancelButtonColor: '#7A4E56',
+                    color: '#53363C',
+                    background: '#FFFFFF'
+                });
+
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Đang đăng xuất...',
+                        html: 'Vui lòng chờ trong giây lát',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        didOpen: () => Swal.showLoading(),
+                        color: '#53363C',
+                        background: '#FFFFFF'
+                    });
+                    const response = await fetch("{{ route('dangxuat') }}", {
+                        method: 'POST',
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                        }
+                    });
+
+                    const data = await response.json();
+                    Swal.close();
+
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Đăng xuất thành công!',
+                            text: data.message || 'Cảm ơn bạn đã sử dụng hệ thống 💖',
+                            icon: 'success',
+                            timer: 1500,
+                            showConfirmButton: false,
+                            color: '#53363C',
+                            background: '#FFFFFF'
+                        }).then(() => {
+                            window.location.href = "{{ route('dangnhapadmin') }}";
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Đăng xuất thất bại!',
+                            text: data.message || 'Đã xảy ra lỗi khi đăng xuất.',
+                            icon: 'error',
+                            confirmButtonColor: '#D9A1AC',
+                            color: '#53363C',
+                            background: '#FFFFFF'
+                        });
+                    }
+                }
+
+            } catch (err) {
+                Swal.close();
+                Swal.fire({
+                    title: 'Lỗi hệ thống!',
+                    text: err.message || 'Không thể kết nối đến máy chủ.',
+                    icon: 'error',
+                    confirmButtonColor: '#D9A1AC',
+                    color: '#53363C',
+                    background: '#FFFFFF'
+                });
+            }
+        }
     </script>
 
     @stack('scripts')
